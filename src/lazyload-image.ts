@@ -1,13 +1,13 @@
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/take';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/of';
-import { Observable } from 'rxjs/Observable';
-import { getScrollListener } from './scroll-listener';
-import { Rect } from './rect';
+import "rxjs/add/operator/filter";
+import "rxjs/add/operator/do";
+import "rxjs/add/operator/take";
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/mergeMap";
+import "rxjs/add/operator/catch";
+import "rxjs/add/observable/of";
+import { Observable } from "rxjs/Observable";
+import { getScrollListener } from "./scroll-listener";
+import { Rect } from "./rect";
 
 export function isVisible(element: HTMLElement, threshold = 0, _window: Window, scrollContainer?: HTMLElement) {
     const elementBounds = Rect.fromElement(element);
@@ -24,18 +24,18 @@ export function isVisible(element: HTMLElement, threshold = 0, _window: Window, 
 }
 
 export function isChildOfPicture(element: HTMLImageElement | HTMLDivElement): boolean {
-    return Boolean(element.parentElement && element.parentElement.nodeName.toLowerCase() === 'picture');
+    return Boolean(element.parentElement && element.parentElement.nodeName.toLowerCase() === "picture");
 }
 
 export function isImageElement(element: HTMLImageElement | HTMLDivElement): element is HTMLImageElement {
-    return element.nodeName.toLowerCase() === 'img';
+    return element.nodeName.toLowerCase() === "img";
 }
 
 function loadImage(element: HTMLImageElement | HTMLDivElement, imagePath: string, useSrcset: boolean): Observable<string> {
     let img: HTMLImageElement;
     if (isImageElement(element) && isChildOfPicture(element)) {
         const parentClone = element.parentNode.cloneNode(true) as HTMLPictureElement;
-        img = parentClone.getElementsByTagName('img')[0];
+        img = parentClone.getElementsByTagName("img")[0];
         setSourcesToLazy(img);
         setImage(img, imagePath, useSrcset);
     } else {
@@ -50,16 +50,15 @@ function loadImage(element: HTMLImageElement | HTMLDivElement, imagePath: string
         }
     }
 
-    return Observable
-        .create(observer => {
-            img.onload = () => {
-                observer.next(imagePath);
-                observer.complete();
-            };
-            img.onerror = err => {
-                observer.error(null);
-            };
-        });
+    return Observable.create(observer => {
+        img.onload = () => {
+            observer.next(imagePath);
+            observer.complete();
+        };
+        img.onerror = err => {
+            observer.error(null);
+        };
+    });
 }
 
 function setImage(element: HTMLImageElement | HTMLDivElement, imagePath: string, useSrcset: boolean) {
@@ -71,25 +70,26 @@ function setImage(element: HTMLImageElement | HTMLDivElement, imagePath: string,
         }
     } else {
         element.style.backgroundImage = `url('${imagePath}')`;
+        element.style.animationName = "none";
     }
     return element;
 }
 
 function setSources(attrName: string) {
     return (image: HTMLImageElement) => {
-        const sources = image.parentElement.getElementsByTagName('source');
+        const sources = image.parentElement.getElementsByTagName("source");
         for (let i = 0; i < sources.length; i++) {
             const attrValue = sources[i].getAttribute(attrName);
             if (attrValue) {
                 sources[i].srcset = attrValue;
             }
         }
-    }
+    };
 }
 
-const setSourcesToDefault = setSources('defaultImage');
-const setSourcesToLazy = setSources('lazyLoad');
-const setSourcesToError = setSources('errorImage');
+const setSourcesToDefault = setSources("defaultImage");
+const setSourcesToLazy = setSources("lazyLoad");
+const setSourcesToError = setSources("errorImage");
 
 function setImageAndSources(setSourcesFn: (image: HTMLImageElement) => void) {
     return (element: HTMLImageElement | HTMLDivElement, imagePath: string, useSrcset: boolean) => {
@@ -99,7 +99,7 @@ function setImageAndSources(setSourcesFn: (image: HTMLImageElement) => void) {
         if (imagePath) {
             setImage(element, imagePath, useSrcset);
         }
-    }
+    };
 }
 
 const setImageAndSourcesToDefault = setImageAndSources(setSourcesToDefault);
@@ -108,18 +108,18 @@ const setImageAndSourcesToError = setImageAndSources(setSourcesToError);
 
 function setLoadedStyle(element: HTMLImageElement | HTMLDivElement) {
     const styles = element.className
-        .split(' ')
+        .split(" ")
         .filter(s => !!s)
-        .filter(s => s !== 'ng-lazyloading');
-    styles.push('ng-lazyloaded');
-    element.className = styles.join(' ');
+        .filter(s => s !== "ng-lazyloading");
+    styles.push("ng-lazyloaded");
+    element.className = styles.join(" ");
     return element;
 }
 
 export function lazyLoadImage(element: HTMLImageElement | HTMLDivElement, imagePath: string, defaultImagePath: string, errorImgPath: string, offset: number, useSrcset: boolean = false, scrollContainer?: HTMLElement) {
     setImageAndSourcesToDefault(element, defaultImagePath, useSrcset);
-    if (element.className && element.className.includes('ng-lazyloaded')) {
-        element.className = element.className.replace('ng-lazyloaded', '');
+    if (element.className && element.className.includes("ng-lazyloaded")) {
+        element.className = element.className.replace("ng-lazyloaded", "");
     }
 
     return (scrollObservable: Observable<Event>) => {
@@ -131,7 +131,7 @@ export function lazyLoadImage(element: HTMLImageElement | HTMLDivElement, imageP
             .map(() => true)
             .catch(() => {
                 setImageAndSourcesToError(element, errorImgPath, useSrcset);
-                element.className += ' ng-failed-lazyloaded';
+                element.className += " ng-failed-lazyloaded";
                 return Observable.of(false);
             })
             .do(() => setLoadedStyle(element));
