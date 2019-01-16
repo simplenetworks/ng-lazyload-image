@@ -70,6 +70,8 @@ function setImage(element: HTMLImageElement | HTMLDivElement, imagePath: string,
         }
     } else {
         element.style.backgroundImage = `url('${imagePath}')`;
+        element.style['backgroundBlendMode'] = 'multiply';
+        element.style.backgroundColor = "#BEBEBE";
         element.style.animationName = "none";
     }
     return element;

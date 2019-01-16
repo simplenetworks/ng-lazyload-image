@@ -73,6 +73,8 @@ function setImage(element, imagePath, useSrcset) {
     }
     else {
         element.style.backgroundImage = "url('" + imagePath + "')";
+        element.style['backgroundBlendMode'] = 'multiply';
+        element.style.backgroundColor = "#BEBEBE";
         element.style.animationName = "none";
     }
     return element;
