@@ -1,4 +1,4 @@
 .vscode
-# dist
+dist
 example-dist
 node_modules
